@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,14 +10,14 @@ import java.util.List;
 public class DictionaryBuilder {
 	private GenericLinkedList<WordData>[] arr;
 	private int loadSize;
-	private double loadFactor;
+	private static double LOAD_FACTOR;
 
 	public DictionaryBuilder(int estimatedEntries) {
 		arr = new GenericLinkedList[estimatedEntries];
 		loadSize = estimatedEntries;
 	}
 
-	public DictionaryBuilder(String filename) {
+	public DictionaryBuilder(String filename) throws FileNotFoundException{
 		Path path = Paths.get(filename);
 		try {
 			int size = (int) Files.size(path); //file size = estimated unique words/0.6
@@ -28,7 +29,7 @@ public class DictionaryBuilder {
 					break;
 				}
 			}
-			loadFactor = loadSize/size;
+			LOAD_FACTOR = loadSize/size;
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
@@ -52,9 +53,7 @@ public class DictionaryBuilder {
 				} // consider try catch
 			}
 		} catch (java.io.FileNotFoundException e) {
-			// Inform user if file cannot be found
-			System.out.println(e.getMessage());
-			System.out.println("Unable to load file: " + filename);
+			throw new FileNotFoundException();
 		}
 	}
 
@@ -126,6 +125,6 @@ public class DictionaryBuilder {
 	}
 	public double getLoadFactor()
 	{
-		return loadFactor;
+		return LOAD_FACTOR;
 	}
 }
